@@ -1,10 +1,29 @@
 import React, { useState,useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
-function ProductList() {
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice';
+function ProductList(props) {
     const [showCart, setShowCart] = useState(false); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-
+    const [cart, setCart] = useState([]); // State to store the items added to the cart
+    const dispatch = useDispatch();
+    const cartItems=useSelector(state => state.cart.items);
+    console.log(cartItems);
+    // setCart(cartItems);
+    useEffect(() => {
+        
+    }, []);
+    const alreadyInCart = (itemName) => {
+        return cartItems.some((item) => item.name === itemName);
+    }
+    const handleAddToCart = (item) => {
+        console.log("clicked");
+        dispatch(addItem(item));
+    }
+    const totalItems = () => {
+        return cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -213,7 +232,7 @@ function ProductList() {
         }
     ];
    const styleObj={
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#615EFC',
     color: '#fff!important',
     padding: '15px',
     display: 'flex',
@@ -243,11 +262,12 @@ const handlePlantsClick = (e) => {
 };
 
    const handleContinueShopping = (e) => {
+    console.log("clicked");
     e.preventDefault();
     setShowCart(false);
   };
     return (
-        <div>
+       <div>
              <div className="navbar" style={styleObj}>
             <div className="tag">
                <div className="luxury">
@@ -268,6 +288,19 @@ const handlePlantsClick = (e) => {
         </div>
         {!showCart? (
         <div className="product-grid">
+            <br></br>
+            {plantsArray.map((item)=><div className='mainCategoryDiv'> <h1>{item.category}</h1> 
+            <div className="product-list">
+            {item.plants.map((plant)=>
+                <div className='product-card'>
+                    <img className='product-image' src={plant.image} alt={plant.name} />
+                    <h2>{plant.name}</h2>
+                    <p>{plant.description}</p>
+                    <p>{plant.cost}</p>
+                    <button style={{backgroundColor:alreadyInCart(plant.name)?"gray":"#615EFC"}} disabled={alreadyInCart(plant.name)? true:false} onClick={()=>handleAddToCart({name:plant.name,cost:plant.cost,image:plant.image})} className='product-button'>Add to Cart</button>
+                </div>)}
+                 </div>
+            </div>)}
 
 
         </div>
